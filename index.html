@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="果園小幫手">
+<meta name="theme-color" content="#faf8f3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141a15" media="(prefers-color-scheme: dark)">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<title>果園小幫手</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+/* VOICE: 給中高齡鮮果經營者用的工具，字大、句短、一次只做一件事
+   IDEA: 產期前一週晚上，在手機上跟著「果園小幫手」走完一輪內容產製
+   PICTURE: 每一畫面的主要操作本身即是畫面主體
+   COLOUR/TYPE: 果園綠為主、芒果橘為重點；PingFang TC／Noto Sans TC，大字級
+   LAYOUT: iPhone 全螢幕，上方返回列、中段內容可捲動、下方固定大按鈕，避開安全區 */
+:root{color-scheme:light dark;
+  --bg:light-dark(#faf8f3,#141a15);--ink:light-dark(#1f2a1f,#eef1ea);--muted:light-dark(#5b665b,#a9b4a8);
+  --line:light-dark(#d6d0c2,#36423a);--card:light-dark(#ffffff,#1d251f);
+  --green:light-dark(#2f6b3a,#86c993);--btn:light-dark(#2f6b3a,#3f8a4c);--green-2:light-dark(#e3efe2,#1f3a25);
+  --mango:light-dark(#c9701b,#f0a24f);--mango-2:light-dark(#fff1e0,#3a2a17);--red:light-dark(#b3412f,#e8806e);
+  --sheet:light-dark(#ffffff,#1d251f)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:"PingFang TC","Noto Sans TC",system-ui,sans-serif;overflow:hidden}
+button,textarea,label{touch-action:manipulation}
+.app{height:100dvh;display:flex;flex-direction:column;max-width:560px;margin:0 auto}
+.top{flex:none;padding:calc(env(safe-area-inset-top) + 6px) max(16px,env(safe-area-inset-right)) 6px max(16px,env(safe-area-inset-left));display:flex;align-items:center;justify-content:space-between;min-height:56px}
+.back{font:inherit;font-size:19px;border:none;background:none;color:var(--green);font-weight:700;padding:10px 4px;min-height:44px;cursor:pointer}
+.menu{font:inherit;font-size:15px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 14px;min-height:40px;cursor:pointer}
+.badge{margin:0 20px 6px;background:var(--ink);color:var(--bg);border-radius:10px;padding:6px 12px;font-size:14px;line-height:1.4;display:flex;justify-content:space-between;gap:10px}
+.badge b{color:light-dark(#ffd08a,#7a4a10)}
+.badge.recover{background:var(--red);color:#fff}.badge.recover b{color:#fff}
+.badge.off{display:none}
+.body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:4px 20px 20px}
+.foot{flex:none;padding:10px 20px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--bg)}
+h2{font-size:27px;font-weight:900;margin:6px 0 6px;line-height:1.3;text-wrap:balance}
+.lead{font-size:18px;color:var(--muted);margin:0 0 14px;line-height:1.6}
+.btn{display:block;width:100%;font:inherit;font-size:21px;font-weight:700;min-height:60px;border-radius:14px;border:none;cursor:pointer;margin-top:10px}
+.btn:first-child{margin-top:0}
+.btn.primary{background:var(--btn);color:#fff}
+.btn.primary:disabled{opacity:.4;cursor:not-allowed}
+.btn.ghost{background:var(--card);color:var(--green);border:2px solid var(--green)}
+.btn:active:not(:disabled){transform:scale(.98)}
+.card{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:12px;cursor:pointer;text-align:left;width:100%;font:inherit;color:inherit;display:block}
+.card.sel{border-color:var(--green);background:var(--green-2)}
+.card .k{font-size:15px;color:var(--mango);font-weight:700}
+.card .h{font-size:20px;font-weight:700;line-height:1.45;margin-top:2px}
+.card .s{font-size:16px;color:var(--muted);margin-top:4px;line-height:1.5}
+.reason{background:var(--mango-2);border-left:6px solid var(--mango);border-radius:10px;padding:14px 16px;font-size:20px;line-height:1.6;margin:10px 0 14px}
+.reason small{display:block;font-size:15px;color:var(--muted);margin-bottom:4px}
+.kv{display:grid;grid-template-columns:88px minmax(0,1fr);gap:8px 10px;font-size:18px;line-height:1.5;background:var(--card);border-radius:12px;padding:14px;border:1px solid var(--line);margin:0}
+.kv dt{color:var(--muted)}.kv dd{margin:0;font-weight:700}
+.media-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.media{border:3px solid transparent;border-radius:14px;overflow:hidden;cursor:pointer;background:none;padding:0;position:relative;aspect-ratio:4/3}
+.media.sel{border-color:var(--green)}
+.media svg,.media img,.media video{display:block;width:100%;height:100%;object-fit:cover}
+.media .tag{position:absolute;left:6px;bottom:6px;background:rgba(0,0,0,.65);color:#fff;font-size:13px;padding:2px 8px;border-radius:6px}
+.media .chk{position:absolute;right:6px;top:6px;width:30px;height:30px;border-radius:50%;background:var(--btn);color:#fff;font-size:18px;display:none;align-items:center;justify-content:center}
+.media.sel .chk{display:flex}
+.upload{display:flex;align-items:center;justify-content:center;gap:8px;border:2px dashed var(--green);border-radius:14px;color:var(--green);font-size:19px;font-weight:700;min-height:64px;margin-bottom:12px;cursor:pointer}
+.upload input{position:absolute;width:1px;height:1px;opacity:0}
+.ok{display:flex;gap:10px;align-items:center;background:var(--green-2);color:var(--green);border-radius:12px;padding:12px 14px;font-size:18px;font-weight:700;margin-top:12px}
+.ok .dot{width:28px;height:28px;border-radius:50%;background:var(--btn);color:#fff;display:flex;align-items:center;justify-content:center;flex:none}
+.bar{height:10px;background:var(--line);border-radius:6px;overflow:hidden;margin-top:10px}
+.bar i{display:block;height:100%;background:var(--btn);width:0;transition:width .9s ease}
+.tpl{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.chip{font:inherit;font-size:18px;padding:10px 14px;min-height:44px;border-radius:999px;border:2px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.chip.sel{border-color:var(--btn);background:var(--btn);color:#fff;font-weight:700}
+.tplbox{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;font-size:17px;line-height:1.7;margin-top:12px}
+.tplbox ol{margin:6px 0 0;padding-left:22px}
+.post{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;font-size:19px;line-height:1.75;white-space:pre-wrap}
+.time{display:flex;align-items:center;gap:10px;background:var(--mango-2);border-radius:12px;padding:12px 14px;margin-top:12px;font-size:18px}
+.time b{font-size:20px;white-space:nowrap}
+textarea{width:100%;min-height:300px;font:inherit;font-size:19px;line-height:1.7;padding:14px;border:2px solid var(--green);border-radius:14px;background:var(--card);color:var(--ink);resize:vertical}
+.plat{display:grid;gap:10px}
+.plat .card{display:flex;align-items:center;gap:12px;margin:0}
+.ico{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:18px;flex:none}
+.log{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;font-size:17px;line-height:1.8;margin-top:12px}
+.big-check{width:96px;height:96px;border-radius:50%;background:var(--btn);color:#fff;font-size:56px;display:flex;align-items:center;justify-content:center;margin:24px auto 10px}
+.center{text-align:center}
+.muted{color:var(--muted);font-size:16px;line-height:1.6}
+/* 起始畫面 */
+.splash{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;background:linear-gradient(165deg,#3a5a3f,#1f3524);color:#fff;margin:-4px -20px -20px}
+.splash svg{width:150px;height:150px;filter:drop-shadow(0 14px 22px rgba(0,0,0,.35))}
+.splash h1{font-size:36px;font-weight:900;margin:14px 0 4px;line-height:1.1}
+.splash p{font-size:18px;opacity:.88;margin:0;line-height:1.6}
+.splash .when{margin-top:22px;background:rgba(255,255,255,.14);border-radius:12px;padding:10px 16px;font-size:17px}
+.body.full{display:flex;flex-direction:column}
+/* 提示與選單 */
+.toast{position:fixed;left:20px;right:20px;bottom:calc(150px + env(safe-area-inset-bottom));max-width:520px;margin:0 auto;background:var(--ink);color:var(--bg);border-radius:12px;padding:14px 16px;font-size:18px;text-align:center;opacity:0;transition:opacity .25s;pointer-events:none;z-index:20}
+.toast.on{opacity:1}
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:opacity .2s;z-index:30}
+.sheet{position:fixed;left:0;right:0;bottom:0;max-width:560px;margin:0 auto;background:var(--sheet);border-radius:20px 20px 0 0;padding:10px 18px calc(18px + env(safe-area-inset-bottom));transform:translateY(105%);transition:transform .25s ease;z-index:31;max-height:86dvh;overflow-y:auto}
+.open .scrim{opacity:1;pointer-events:auto}.open .sheet{transform:none}
+.grab{width:40px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 10px}
+.sheet h3{font-size:18px;margin:4px 0 2px}
+.steps{list-style:none;margin:8px 0 0;padding:0;border-top:1px solid var(--line)}
+.steps li{border-bottom:1px solid var(--line)}
+.steps button{all:unset;cursor:pointer;display:grid;grid-template-columns:44px minmax(0,1fr);gap:6px;padding:10px 6px;width:100%;box-sizing:border-box;min-height:48px}
+.steps .n{font-weight:900;font-size:16px;color:var(--green)}
+.steps .t{font-size:16px;line-height:1.45}
+.steps .m{display:block;font-size:13px;color:var(--muted)}
+.steps li.on button{background:var(--green-2)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 2px;font-size:16px}
+.sw{appearance:none;width:52px;height:32px;border-radius:999px;background:var(--line);position:relative;cursor:pointer;flex:none;margin:0}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:50%;background:#fff;transition:left .2s}
+.sw:checked{background:var(--btn)}.sw:checked::after{left:23px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top" id="top"></div>
+  <div class="badge" id="badge"></div>
+  <div class="body" id="body"></div>
+  <div class="foot" id="foot"></div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+<div class="scrim" id="scrim"></div>
+<div class="sheet" id="sheet" role="dialog" aria-label="流程導覽">
+  <div class="grab"></div>
+  <h3>一輪內容產製之預定操作流程</h3>
+  <p class="muted" style="margin:0">對應計畫書表 5。點任一步驟可直接跳到該畫面。</p>
+  <ol class="steps" id="stepList"></ol>
+  <div class="row"><label for="badgeSw">畫面上顯示步驟與模組標示</label><input type="checkbox" class="sw" id="badgeSw"></div>
+  <button class="btn ghost" id="resetBtn">從頭開始</button>
+  <p class="muted" style="margin:12px 0 0;font-size:14px">畫面中之建議、理由、文案與時段均為示例資料，非實測結果；「發布」不會真的貼到任何平台。</p>
+</div>
+<script>
+{
+const MOD={out:"內容生成條件輸出模組",ui:"操作介面",tpl:"腳本模板庫",gen:"內容生成服務",data:"資料擷取模組"};
+const STEPS=[
+  {id:0,label:"起始",act:"開啟手機",mod:"—"},
+  {id:1,label:"1",act:"開啟工具",mod:MOD.out},
+  {id:2,label:"2",act:"點選一項建議",mod:MOD.out},
+  {id:3,label:"3",act:"拍攝或選取照片、影片",mod:MOD.ui},
+  {id:4,label:"4",act:"確認系統預選之腳本模板",mod:MOD.tpl},
+  {id:5,label:"5",act:"檢視系統生成之文案",mod:MOD.gen},
+  {id:6,label:"6",act:"修改或直接確認",mod:MOD.data},
+  {id:7,label:"7",act:"發布，或一鍵複製至平台",mod:MOD.data},
+  {id:8,label:"（8）",act:"錯誤回復或重新生成",mod:MOD.ui}];
+const SUGG=[
+  {k:"建議一",h:"拍一段果園現場的短影片，告訴大家下週開始採收",s:"素材：影片｜語氣：像跟熟客聊天",reason:"上次拍果園現場的影片，留言的人比較多。",topic:"產期預告",media:"影片",tone:"像跟熟客聊天",time:"週五 晚上 8:00"},
+  {k:"建議二",h:"拍幾張樹上的果子照片，提醒老客人可以先預訂",s:"素材：照片｜語氣：簡單直接",reason:"去年採收前先貼預訂消息，私訊來問的人比較多。",topic:"預購提醒",media:"照片",tone:"簡單直接",time:"週六 中午 12:00"},
+  {k:"建議三",h:"拍套袋、巡果園的過程，讓大家知道果子怎麼照顧",s:"素材：照片或影片｜語氣：分享日常",reason:"講照顧過程的那幾篇，看完按讚的人比較多。",topic:"採收紀實",media:"照片",tone:"分享日常",time:"週日 晚上 7:30"}];
+const TEMPLATES={
+  "產期預告":["開頭：一句話說出「下週開採」","中段：果園現在的樣子（顏色、天氣）","結尾：告訴大家怎麼預訂"],
+  "採收紀實":["開頭：今天在果園做了什麼","中段：照顧果子的小細節","結尾：預告採收時間"],
+  "出貨通知":["開頭：第一批已經出貨","中段：怎麼收貨、怎麼保存","結尾：還沒訂的朋友怎麼訂"],
+  "預購提醒":["開頭：今年產期快到了","中段：數量與預訂方式","結尾：截止時間"]};
+const CAPTIONS={
+  "產期預告":[`【芒果下週開採】
+果園的芒果套袋好一陣子了，這幾天看下去，顏色慢慢轉紅。
+照天氣看，預計下週開始採收。第一批數量不多，想先預訂的朋友，留言「+1」或直接私訊我們。
+採收當天現採現寄。`,`【今年的芒果，下週見】
+這週巡果園，樹上的芒果一顆一顆轉紅，香氣也出來了。
+下週會開始採第一批，數量有限。
+想吃的朋友留言「+1」，我們會私訊跟你確認數量。`],
+  "預購提醒":[`【今年芒果開放預訂】
+再過一週就要採收了，老朋友可以先預訂。
+第一批數量不多，留言「+1」或私訊我們，我們依順序回覆。`,`【先跟老朋友說一聲】
+今年的芒果快好了，下週開始採。
+要預訂的朋友，私訊告訴我們要幾箱就可以。`],
+  "採收紀實":[`【這幾天在果園忙什麼】
+每天早上巡一次果園，看套袋有沒有破、果子有沒有曬傷。
+再過一週就能採收，到時候再跟大家報告。`,`【果子是這樣顧大的】
+套袋、除草、巡果園，每天都要看一次。
+下週開始採收，想吃的朋友可以先留言。`],
+  "出貨通知":[`【第一批芒果出貨了】
+今天採收，今天寄出。收到後請放在陰涼處，等軟一點再吃。
+還沒訂的朋友，私訊我們。`,`【芒果已經寄出】
+第一批已交給貨運，一兩天內會到。
+收到後先放室溫，聞到香味再冰。`]};
+const SCENES={
+  a:`<rect width="160" height="120" fill="#bfe0f2"/><rect y="78" width="160" height="42" fill="#7aa35a"/><circle cx="40" cy="62" r="30" fill="#2f6b3a"/><rect x="36" y="76" width="8" height="26" fill="#6b4a2b"/><circle cx="118" cy="58" r="34" fill="#3d7d45"/><rect x="114" y="74" width="8" height="30" fill="#6b4a2b"/><circle cx="30" cy="60" r="6" fill="#e8892b"/><circle cx="52" cy="70" r="6" fill="#f0a640"/><circle cx="108" cy="55" r="6" fill="#e8892b"/><circle cx="130" cy="66" r="6" fill="#f0a640"/><circle cx="140" cy="20" r="10" fill="#ffd56a"/>`,
+  b:`<rect width="160" height="120" fill="#3d7d45"/><ellipse cx="80" cy="64" rx="34" ry="40" fill="#f3e7c7"/><path d="M60 40 Q80 26 100 40" stroke="#c9b98f" stroke-width="3" fill="none"/><rect x="77" y="10" width="6" height="22" fill="#5a3f24"/><circle cx="40" cy="30" r="14" fill="#2f6b3a"/><circle cx="130" cy="96" r="16" fill="#2f6b3a"/>`,
+  c:`<rect width="160" height="120" fill="#2f6b3a"/><ellipse cx="62" cy="66" rx="24" ry="30" fill="#e8892b"/><ellipse cx="104" cy="70" rx="22" ry="28" fill="#d9732a"/><ellipse cx="58" cy="56" rx="7" ry="10" fill="#f6b25b" opacity=".7"/><rect x="60" y="22" width="4" height="18" fill="#5a3f24"/><rect x="102" y="28" width="4" height="16" fill="#5a3f24"/>`,
+  d:`<rect width="160" height="120" fill="#d9e6c4"/><rect y="86" width="160" height="34" fill="#9a7b52"/><rect x="18" y="58" width="56" height="34" fill="#c98a3c"/><rect x="86" y="58" width="56" height="34" fill="#c98a3c"/><ellipse cx="34" cy="58" rx="9" ry="7" fill="#e8892b"/><ellipse cx="52" cy="58" rx="9" ry="7" fill="#f0a640"/><ellipse cx="104" cy="58" rx="9" ry="7" fill="#e8892b"/><ellipse cx="122" cy="58" rx="9" ry="7" fill="#f0a640"/>`};
+const MEDIA=[{id:"a",tag:"▶ 影片 0:24　果園全景"},{id:"b",tag:"照片　套袋中的果子"},{id:"c",tag:"照片　轉紅的芒果"},{id:"d",tag:"▶ 影片 0:15　去年採收"}];
+const MANGO=`<svg viewBox="0 0 120 120" aria-hidden="true"><ellipse cx="60" cy="70" rx="33" ry="36" fill="#e8892b"/><ellipse cx="50" cy="58" rx="16" ry="17" fill="#f3a548"/><ellipse cx="46" cy="53" rx="6" ry="6" fill="#ffd08a"/><rect x="58" y="22" width="5" height="16" fill="#5a3f24"/><path d="M63 28 L88 15 L97 25 L72 37 Z" fill="#a8d08d"/></svg>`;
+
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const store={get(k,d){try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v)}catch(_){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(_){}}};
+const initial=()=>({step:0,sug:null,media:null,own:null,tpl:null,ver:0,text:"",edited:false,plat:null,published:false,from:null,mode:null,savedAt:null});
+let S=initial();
+let showBadge=store.get("orchard.badge",true);
+const $=s=>document.querySelector(s);
+const elTop=$("#top"),elBadge=$("#badge"),elBody=$("#body"),elFoot=$("#foot");
+
+function toast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("on");clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove("on"),1800)}
+function currentCaption(){const tpl=S.tpl||(S.sug!==null?SUGG[S.sug].topic:"產期預告");const a=CAPTIONS[tpl];return a[S.ver%a.length]}
+function nowStr(){const d=new Date(),w="日一二三四五六"[d.getDay()];return `週${w} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`}
+function hhmm(){const d=new Date();return `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`}
+function svg(id){return `<svg viewBox="0 0 160 120" preserveAspectRatio="xMidYMid slice">${SCENES[id]}</svg>`}
+
+const R={
+  0(){return {full:true,body:`<div class="splash">${MANGO}<h1>果園小幫手</h1><p>鮮果類經營者的內容產製工具</p><div class="when">情境：星期三晚上・產期前一週</div></div>`,
+    foot:`<button class="btn primary" data-act="open">開始</button>`,back:false}},
+  1(){return {body:`<h2>本週建議</h2><p class="lead">離採收還有一週。下面 3 件事，挑一件來做就好。</p>`+
+    SUGG.map((g,i)=>`<button class="card" data-act="pick" data-i="${i}"><div class="k">${g.k}</div><div class="h">${g.h}</div><div class="s">${g.s}</div></button>`).join(""),back:false}},
+  2(){const g=SUGG[S.sug];return {body:`<h2>${g.h}</h2><div class="reason"><small>為什麼建議這樣做？</small>${g.reason}</div>
+    <dl class="kv"><dt>要拍什麼</dt><dd>${g.media}</dd><dt>說話方式</dt><dd>${g.tone}</dd><dt>建議時間</dt><dd>${g.time}</dd></dl>`,
+    foot:`<button class="btn primary" data-act="next">好，就做這個</button>`}},
+  3(){
+    const own=S.own?`<button class="media ${S.media==="own"?"sel":""}" data-act="media" data-id="own">${S.own.type==="video"?`<video src="${S.own.url}" muted playsinline></video>`:`<img src="${S.own.url}" alt="">`}<span class="tag">${S.own.type==="video"?"▶ 你的影片":"你的照片"}</span><span class="chk">✓</span></button>`:"";
+    const grid=own+MEDIA.map(m=>`<button class="media ${S.media===m.id?"sel":""}" data-act="media" data-id="${m.id}">${svg(m.id)}<span class="tag">${m.tag}</span><span class="chk">✓</span></button>`).join("");
+    return {body:`<h2>放一段影片或照片</h2><p class="lead">現在拍，或從相簿挑一個。</p>
+    <label class="upload">現在拍攝／從相簿選<input type="file" accept="image/*,video/*" id="fileIn"></label>
+    <p class="muted" style="margin:0 0 8px">最近的相簿內容（示例）：</p><div class="media-grid">${grid}</div>
+    ${S.media?`<div class="ok"><span class="dot">✓</span>素材已上傳，可以下一步</div>`:""}<div class="bar" id="upbar" style="display:none"><i></i></div>`,
+    foot:`<button class="btn primary" data-act="next" ${S.media?"":"disabled"}>下一步</button>`}},
+  4(){const g=SUGG[S.sug],tpl=S.tpl||g.topic;
+    return {body:`<h2>寫法已經幫你選好</h2><p class="lead">依「鮮果」和「${g.topic}」，系統先選了 <b style="color:var(--green)">${g.topic}</b>。要換也可以。</p>
+    <div class="tpl">${Object.keys(TEMPLATES).map(t=>`<button class="chip ${t===tpl?"sel":""}" data-act="tpl" data-t="${t}">${t}</button>`).join("")}</div>
+    <div class="tplbox"><b>「${tpl}」會這樣寫：</b><ol>${TEMPLATES[tpl].map(x=>`<li>${x}</li>`).join("")}</ol></div>`,
+    foot:`<button class="btn primary" data-act="genNext">用這個寫法，幫我寫文案</button>`}},
+  5(){const g=SUGG[S.sug];return {body:`<h2>文案寫好了</h2><p class="lead">看看順不順，下一步可以改。</p>
+    <div class="post">${esc(currentCaption())}</div><div class="time"><span>建議發布時間<br><b>${g.time}</b></span></div>`,
+    foot:`<button class="btn primary" data-act="next">看起來可以，下一步</button><button class="btn ghost" data-act="regen">換一個寫法</button>`}},
+  6(){const txt=S.text||currentCaption();
+    return {body:`<h2>要改哪裡嗎？</h2><p class="lead">直接點文字就能改。不用改就按「直接確認」。</p><textarea id="edit">${esc(txt)}</textarea>
+    ${S.savedAt?`<div class="ok"><span class="dot">✓</span>已保存${S.edited?"修改後的版本":"原始版本"}（${S.savedAt}）</div>`:""}`,
+    foot:S.savedAt?`<button class="btn primary" data-act="next">下一步：發布</button>`:`<button class="btn primary" data-act="confirm">${S.edited?"改好了，保存":"直接確認"}</button>`}},
+  7(){
+    if(S.published){const P={fb:"Facebook 粉絲專頁",ig:"Instagram",line:"LINE 官方帳號"}[S.plat];
+      return {back:false,body:`<div class="big-check">✓</div><h2 class="center">完成了</h2>
+      <p class="lead center">${S.mode==="copy"?"文案已複製，貼到 "+P+" 就好。":"已發布到 "+P+"（示例）。"}</p>
+      <div class="log"><b>系統已記下：</b><br>時間：${nowStr()}<br>平台：${P}<br>方式：${S.mode==="copy"?"複製後自行貼上":"直接發布"}<br>文案：${S.edited?"修改後版本":"系統原始版本"}<br>
+      <span class="muted">下次會拿這一篇的成果，來調整「本週建議」。</span></div>`,
+      foot:`<button class="btn ghost" data-act="restart">回到本週建議</button>`}}
+    const pl=[{id:"fb",n:"Facebook 粉絲專頁",c:"#1f5fbf",i:"f"},{id:"ig",n:"Instagram",c:"#b8418c",i:"IG"},{id:"line",n:"LINE 官方帳號",c:"#2c9b46",i:"L"}]
+      .map(p=>`<button class="card ${S.plat===p.id?"sel":""}" data-act="plat" data-p="${p.id}"><span class="ico" style="background:${p.c}">${p.i}</span><span class="h" style="margin:0">${p.n}</span></button>`).join("");
+    return {body:`<h2>要發到哪裡？</h2><p class="lead">選一個地方。不想現在發，也可以先複製文案。</p><div class="plat">${pl}</div>`,
+      foot:`<button class="btn primary" data-act="publish" ${S.plat?"":"disabled"}>發布</button><button class="btn ghost" data-act="copy" ${S.plat?"":"disabled"}>一鍵複製文案</button>`}},
+  8(){const prev=S.from,canRegen=prev>=5,prevName=prev?STEPS[prev-1]?.act:"";
+    if(S.mode==="regenerating") return {back:false,body:`<h2>正在換一個寫法…</h2><p class="lead">照片和建議都保留，只重寫文案。</p><div class="bar"><i id="rg"></i></div>`};
+    return {back:false,body:`<h2>要怎麼處理？</h2><p class="lead">別擔心，前面做的都還在。</p>
+    ${prev>1?`<button class="card" data-act="goBack"><div class="k">回到上一步</div><div class="h">回到步驟 ${prev-1}：${prevName}</div><div class="s">剛剛選的、拍的都會保留。</div></button>`:""}
+    ${canRegen?`<button class="card ${S.mode==="regen"?"sel":""}" data-act="doRegen"><div class="k">重新產生文案</div><div class="h">換一個寫法再看看</div><div class="s">照片和建議不變，只重寫文字。</div></button>`:""}
+    <button class="card" data-act="stay"><div class="k">取消</div><div class="h">留在步驟 ${prev}，繼續做</div></button>`}}
+};
+
+function render(){
+  const v=R[S.step]();
+  elTop.innerHTML=`${v.back===false?"<span></span>":`<button class="back" data-act="back">‹ 上一步</button>`}<button class="menu" id="menuBtn">流程導覽</button>`;
+  const st=STEPS[S.step];
+  elBadge.className="badge"+(S.step===8?" recover":"")+(!showBadge||S.step===0?" off":"");
+  elBadge.innerHTML=S.step===8?`<b>步驟（8）錯誤回復／重新生成</b><span>${st.mod}</span>`:`<b>步驟 ${S.step}／7</b><span>${st.mod}</span>`;
+  elBody.className="body"+(v.full?" full":"");
+  elBody.innerHTML=v.body;elBody.scrollTop=0;
+  elFoot.innerHTML=v.foot||"";elFoot.style.display=v.foot?"":"none";
+  document.querySelectorAll("#stepList li").forEach(li=>li.classList.toggle("on",+li.dataset.s===S.step));
+  if(S.step===6){const ta=$("#edit");ta.addEventListener("input",()=>{
+    S.text=ta.value;S.edited=ta.value.trim()!==currentCaption().trim();
+    if(S.savedAt){S.savedAt=null;const pos=ta.selectionStart;render();const t=$("#edit");t.focus();t.setSelectionRange(pos,pos);return}
+    const b=elFoot.querySelector('[data-act="confirm"]');if(b)b.textContent=S.edited?"改好了，保存":"直接確認"})}
+  if(S.step===3){$("#fileIn").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;
+    if(S.own)URL.revokeObjectURL(S.own.url);S.own={url:URL.createObjectURL(f),type:f.type.startsWith("video")?"video":"image"};uploadAnim("own")})}
+  if(S.step===8&&S.mode==="regenerating"){requestAnimationFrame(()=>requestAnimationFrame(()=>{const b=$("#rg");if(b)b.style.width="100%"}));
+    setTimeout(()=>{S.ver++;S.text="";S.edited=false;S.savedAt=null;S.mode=null;S.step=5;render();toast("已換一個寫法")},1100)}
+}
+function uploadAnim(id){S.media=id;render();const bar=$("#upbar");bar.style.display="block";requestAnimationFrame(()=>requestAnimationFrame(()=>{bar.firstElementChild.style.width="100%"}))}
+function enterRecover(mode){S.from=S.step;S.mode=mode;S.step=8;render()}
+function copyText(t){
+  const fallback=()=>{const ta=document.createElement("textarea");ta.value=t;ta.setAttribute("readonly","");ta.style.cssText="position:fixed;top:0;opacity:0";document.body.appendChild(ta);ta.select();ta.setSelectionRange(0,t.length);let ok=false;try{ok=document.execCommand("copy")}catch(_){}ta.remove();return ok};
+  try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).catch(fallback);return}}catch(_){}
+  fallback();
+}
+
+document.addEventListener("click",e=>{
+  if(e.target.closest("#menuBtn")){openSheet(true);return}
+  const el=e.target.closest(".app [data-act]");if(!el)return;
+  switch(el.dataset.act){
+    case "open":S.step=1;break;
+    case "pick":S.sug=+el.dataset.i;S.tpl=null;S.ver=0;S.text="";S.savedAt=null;S.step=2;break;
+    case "next":S.step++;break;
+    case "media":uploadAnim(el.dataset.id);return;
+    case "tpl":S.tpl=el.dataset.t;S.ver=0;S.text="";S.savedAt=null;break;
+    case "genNext":if(!S.tpl)S.tpl=SUGG[S.sug].topic;S.step=5;break;
+    case "regen":enterRecover("regen");return;
+    case "back":if(S.step===2){S.step=1;break}enterRecover("back");return;
+    case "goBack":S.step=Math.max(1,S.from-1);S.mode=null;break;
+    case "doRegen":S.mode="regenerating";break;
+    case "stay":S.step=S.from;S.mode=null;break;
+    case "confirm":S.text=$("#edit").value;S.savedAt=hhmm();render();toast(S.edited?"已保存修改版本，之後會拿來比較成效":"已確認原始版本");return;
+    case "plat":S.plat=el.dataset.p;break;
+    case "publish":S.mode="publish";S.published=true;break;
+    case "copy":copyText(S.text||currentCaption());S.mode="copy";S.published=true;break;
+    case "restart":S=initial();S.step=1;break;
+  }
+  render();
+});
+
+// 流程導覽
+const sheetHost=document.body;
+function openSheet(on){sheetHost.classList.toggle("open",on)}
+$("#scrim").addEventListener("click",()=>openSheet(false));
+$("#stepList").innerHTML=STEPS.map(s=>`<li data-s="${s.id}"><button><span class="n">${s.label}</span><span class="t">${s.act}<span class="m">${s.mod}</span></span></button></li>`).join("");
+$("#stepList").addEventListener("click",e=>{const li=e.target.closest("li");if(!li)return;jump(+li.dataset.s);openSheet(false)});
+function jump(n){const b=initial();
+  if(n>=2)b.sug=0; if(n>=4)b.media="a"; if(n>=5)b.tpl="產期預告"; if(n===7)b.savedAt=hhmm();
+  if(n===8){b.sug=0;b.media="a";b.tpl="產期預告";b.from=5;b.mode="regen"}
+  b.own=S.own;b.step=n;S=b;render()}
+const sw=$("#badgeSw");sw.checked=showBadge;sw.addEventListener("change",()=>{showBadge=sw.checked;store.set("orchard.badge",showBadge);render()});
+$("#resetBtn").addEventListener("click",()=>{S=initial();render();openSheet(false)});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")openSheet(false);if(e.target.tagName==="TEXTAREA")return;
+  if(e.key==="ArrowRight"&&S.step<8)jump(S.step+1);if(e.key==="ArrowLeft"&&S.step>0)jump(S.step-1)});
+
+render();
+// 自行架站時：離線可用（在 Claude 預覽中會被略過）
+try{if("serviceWorker" in navigator&&location.protocol==="https:"&&!/claude|anthropic/.test(location.hostname))navigator.serviceWorker.register("sw.js").catch(()=>{})}catch(_){}
+}
+</script>
+</body>
+</html>
